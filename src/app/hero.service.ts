@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
-import { Hero } from './hero';
-import { HEROES } from './mock-heroes';
-import { Observable, of } from 'rxjs';
-import { MessageService } from './message.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable, of } from 'rxjs';
+import { catchError, map, tap } from 'rxjs/operators';
+
+import { MessageService } from './message.service';
+import { HEROES } from './mock-heroes';
+import { Hero } from './hero';
 
 @Injectable({
   providedIn: 'root'
@@ -11,6 +13,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 export class HeroService {
   private messageService: MessageService;
   private http: HttpClient;
+  private heroesUrl = 'api/heroes';  // URL to web api
 
   constructor(messageService: MessageService, http: HttpClient) {
     this.messageService = messageService;
@@ -26,7 +29,7 @@ export class HeroService {
   getHeroes(): Observable<Hero[]> {
     // TODO: send the message _after_ fetching all heroes
     this.messageService.add('HeroService: fetched heroes');
-    return of(HEROES);
+    return this.http.get<Hero[]>(this.heroesUrl);
   }
 
   /** Log a HeroService message with the MessageService */
